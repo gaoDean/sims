@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #include "back.h"
 
@@ -16,6 +17,7 @@ int init(SDL_Window *window,
 			SCREEN_WIDTH,
 			SCREEN_HEIGHT,
 			SDL_WINDOW_RESIZABLE);
+
 	screen = SDL_GetWindowSurface(window);
 
 	*background = SDL_MapRGB(screen->format, 113, 113, 113);
