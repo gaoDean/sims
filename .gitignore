@@ -2,6 +2,8 @@
 !/**/
 !*.*
 
+src/obj
+
 # Prerequisites
 *.d
 
