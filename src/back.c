@@ -3,13 +3,7 @@
 #include <SDL2/SDL.h>
 #include "back.h"
 
-SDL_Window *window;
-SDL_Surface *screen;
-
-int init(SDL_Window *window,
-		SDL_Surface *screen,
-		SDL_Renderer *renderer,
-		Uint32 *background)
+int init(SDL_Window *window, SDL_Renderer *render)
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	window = SDL_CreateWindow("",
@@ -19,20 +13,21 @@ int init(SDL_Window *window,
 			SCREEN_HEIGHT,
 			SDL_WINDOW_RESIZABLE);
 
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	screen = SDL_GetWindowSurface(window);
+	render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	*background = SDL_MapRGB(screen->format, 113, 113, 113);
-	SDL_FillRect(screen, NULL, *background);
 	SDL_UpdateWindowSurface(window);
 
 	return 0;
 }
 
-int deinit(void)
+int deinit(SDL_Window *window, SDL_Renderer *render)
 {
-	SDL_FreeSurface(screen);
-	SDL_DestroyWindow(window);
+	if (window) {
+		SDL_DestroyWindow(window);
+	}
+	if (render) {
+		SDL_DestroyRenderer(render);
+	}
 	SDL_Quit();
 
 	return 0;

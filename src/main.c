@@ -6,11 +6,9 @@ int main(void)
 {
 	SDL_Event event;
 	SDL_Window *window = NULL;
-	SDL_Surface *screen = NULL;
 	SDL_Renderer *render = NULL;
-	Uint32 background;
 
-	init(window, screen, render, &background);
+	init(window, render);
 
 	Vec2 *points = malloc(sizeof(Vec2));
 	Vec2 mousepos;
@@ -27,8 +25,6 @@ int main(void)
 					break;
 				case SDL_WINDOWEVENT:
 					if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-						screen = SDL_GetWindowSurface(window);
-						SDL_FillRect(screen, NULL, background);
 						SDL_UpdateWindowSurface(window);
 					}
 					break;
@@ -49,7 +45,12 @@ int main(void)
 				SDL_GetMouseState(&mousepos.x, &mousepos.y);
 			}
 			SDL_Color linecolor = {.r = 255, .b = 255, .g = 255, .a = SDL_ALPHA_OPAQUE};
-			drawSegLine(render, linecolor, points, npoints);
+			SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawLine(renderer, 320, 200, 300, 240);
+                SDL_RenderDrawLine(renderer, 300, 240, 340, 240);
+                SDL_RenderDrawLine(renderer, 340, 240, 320, 200);
+			/* drawSegLine(render, linecolor, points, npoints); */
+			SDL_RenderPresent(render);
 		}
 		SDL_Delay(16);
 	}
