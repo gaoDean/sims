@@ -8,6 +8,7 @@ SDL_Surface *screen;
 
 int init(SDL_Window *window,
 		SDL_Surface *screen,
+		SDL_Renderer *renderer,
 		Uint32 *background)
 {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -18,6 +19,7 @@ int init(SDL_Window *window,
 			SCREEN_HEIGHT,
 			SDL_WINDOW_RESIZABLE);
 
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	screen = SDL_GetWindowSurface(window);
 
 	*background = SDL_MapRGB(screen->format, 113, 113, 113);

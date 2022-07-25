@@ -4,7 +4,7 @@
 #define SCREEN_WIDTH 500
 #define SCREEN_HEIGHT (SCREEN_WIDTH/16*9)
 
-int init(SDL_Window *, SDL_Surface *, Uint32 *);
+int init(SDL_Window *, SDL_Surface *, SDL_Renderer *, Uint32 *);
 int deinit(void);
 
 #endif
