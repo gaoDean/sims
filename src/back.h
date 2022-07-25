@@ -1,10 +1,10 @@
 #ifndef BACK_H_
 #define BACK_H_
 
-#define SCREEN_WIDTH 500
-#define SCREEN_HEIGHT (SCREEN_WIDTH/16*9)
+#define SCREEN_WIDTH 600
+#define SCREEN_HEIGHT 480
 
-int init(SDL_Window *, SDL_Surface *, SDL_Renderer *, Uint32 *);
-int deinit(void);
+int init(SDL_Window *, SDL_Renderer *);
+int deinit(SDL_Window *, SDL_Renderer *);
 
 #endif

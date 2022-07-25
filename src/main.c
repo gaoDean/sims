@@ -8,7 +8,12 @@ int main(void)
 	SDL_Window *window = NULL;
 	SDL_Renderer *render = NULL;
 
-	init(window, render);
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_CreateWindowAndRenderer(
+			SCREEN_WIDTH,
+			SCREEN_HEIGHT,
+			SDL_WINDOW_RESIZABLE,
+			&window, &render);
 
 	Vec2 *points = malloc(sizeof(Vec2));
 	Vec2 mousepos;
@@ -38,20 +43,18 @@ int main(void)
 					if (mousepos.x < 0 || mousepos.y < 0) {
 						npoints -= 1; // invalid, outside screen, redo
 					}
+					printf("(%4d, %4d)\n", mousepos.x, mousepos.y);
 					break;
 			}
-			// in the end, the mousepos pos of points is where the mouse as released
-			if (pointing) {
-				SDL_GetMouseState(&mousepos.x, &mousepos.y);
-			}
-			SDL_Color linecolor = {.r = 255, .b = 255, .g = 255, .a = SDL_ALPHA_OPAQUE};
-			SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawLine(renderer, 320, 200, 300, 240);
-                SDL_RenderDrawLine(renderer, 300, 240, 340, 240);
-                SDL_RenderDrawLine(renderer, 340, 240, 320, 200);
-			/* drawSegLine(render, linecolor, points, npoints); */
-			SDL_RenderPresent(render);
 		}
+		// in the end, the mousepos pos of points is where the mouse as released
+		if (pointing) {
+			SDL_GetMouseState(&mousepos.x, &mousepos.y);
+			points[npoints - 1] = mousepos;
+		}
+		SDL_Color linecolor = {.r = 255, .b = 255, .g = 255, .a = SDL_ALPHA_OPAQUE};
+		drawSegLine(render, linecolor, points, npoints);
+		SDL_RenderPresent(render);
 		SDL_Delay(16);
 	}
 	printf("total points:\n");
@@ -60,7 +63,13 @@ int main(void)
 	}
 	free(points);
 
-	deinit();
+	if (render) {
+		SDL_DestroyRenderer(render);
+	}
+	if (window) {
+		SDL_DestroyWindow(window);
+	}
+	deinit(window, render);
 
 	return 0;
 }
