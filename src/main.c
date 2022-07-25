@@ -39,11 +39,10 @@ int main(void)
 					break;
 				case SDL_MOUSEBUTTONUP:
 					pointing = 0;
-					points[npoints - 1] = mousepos;
 					if (mousepos.x < 0 || mousepos.y < 0) {
 						npoints -= 1; // invalid, outside screen, redo
 					}
-					printf("(%4d, %4d)\n", mousepos.x, mousepos.y);
+					/* printf("(%4d, %4d)\n", mousepos.x, mousepos.y); */
 					break;
 			}
 		}
@@ -57,10 +56,6 @@ int main(void)
 		SDL_RenderPresent(render);
 		SDL_Delay(16);
 	}
-	printf("total points:\n");
-	for (int i = 0; i < npoints; ++i) {
-		printf("(%4d, %4d)\n", points[i].x, points[i].y);
-	}
 	free(points);
 
 	if (render) {
@@ -69,7 +64,6 @@ int main(void)
 	if (window) {
 		SDL_DestroyWindow(window);
 	}
-	deinit(window, render);
 
 	return 0;
 }
