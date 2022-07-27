@@ -8,7 +8,10 @@ int main(void)
 	SDL_Window *window = NULL;
 	SDL_Renderer *render = NULL;
 
-	SDL_Init(SDL_INIT_VIDEO);
+	if (SDL_Init(SDL_INIT_VIDEO) == -1) {
+		printf("%s", SDL_GetError());
+		return 1;
+	}
 	SDL_CreateWindowAndRenderer(
 			SCREEN_WIDTH,
 			SCREEN_HEIGHT,
@@ -28,14 +31,15 @@ int main(void)
 				case SDL_QUIT:
 					running = 0;
 					break;
-				case SDL_WINDOWEVENT:
-					if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-						SDL_UpdateWindowSurface(window);
-					}
-					break;
 				case SDL_MOUSEBUTTONDOWN:
 					points = realloc(points, ++npoints * sizeof(Vec2));
 					pointing = 1;
+					break;
+				case SDL_WINDOWEVENT:
+					if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+						printf("res\n");
+						SDL_UpdateWindowSurface(window);
+					}
 					break;
 				case SDL_MOUSEBUTTONUP:
 					pointing = 0;
