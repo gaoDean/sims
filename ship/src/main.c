@@ -37,7 +37,6 @@ int main(void)
 					break;
 				case SDL_WINDOWEVENT:
 					if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-						printf("res\n");
 						SDL_UpdateWindowSurface(window);
 					}
 					break;
