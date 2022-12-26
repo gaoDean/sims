@@ -14,9 +14,6 @@
 #define REPEL_FORCE		4000
 #define REPEL_EXP		-4
 
-#define ATOM_NORMAL_COLOR	0xFFFFFFFF
-#define ATOM_CLOSE_COLOR	0xFFFFFF00
-
 double deltaTime;
 int windowWidth;
 int windowHeight;
@@ -32,52 +29,57 @@ typedef struct
 	double x;
 	double y;
 	double mass;
-	Uint32 color;
+	Uint8 r;
+	Uint8 g;
+	Uint8 b;
+	Uint8 a;
 } Atom;
 
-double rand_normalized() {
+double rand_normalized()
+{
 	return (double)rand() / RAND_MAX;
 }
 
-Atom point2Atom(SDL_Point point) {
+Atom point2Atom(SDL_Point point)
+{
 	return (Atom){
-		.x = point.x,
-		.y = point.y,
-		.mass = 1,
-		.color = 0xFFF94144
+		point.x,
+		point.y,
+		1,
+		255,
+		255,
+		255,
+		100
 	};
 }
 
-Vec2 normalize(Vec2 vector, double length) {
+Vec2 normalize(Vec2 vector, double length)
+{
 	return (Vec2){
 		(double)vector.x / length,
 		(double)vector.y / length
 	};
 }
 
-double calculate_length(Vec2 vector) {
+double calculate_length(Vec2 vector)
+{
 	return sqrt(pow(vector.x, 2) + pow(vector.y, 2));
 }
 
-void colorize_atom(Atom *atom, double distance) {
-	Uint32 colors[] = {
-		0xF94144FF,
-		0xF3722CFF,
-		0xF8961EFF,
-		0xF9C74FFF,
-		0x90BE6DFF,
-		0x43AA8BFF,
-		0x577590FF
-	};
-	int num_colors = 7;
-	int extra = 5;
-	printf("%d", (int)(fmin(distance, (num_colors - 1) * extra) / extra));
-	atom->color = colors[(int)(fmin(distance, (num_colors - 1) * extra) / extra)];
+void colorize_atom(Atom *atom, double distance)
+{
+	int max = 10;
+	int min = 1;
+	int strength = fmin(fmax(-distance + max, min), max);
+	atom->mass = strength;
 }
 
 void simulate(Atom *atoms, int num_atoms)
 {
-	Atom *atoms_og = atoms;
+	Atom atoms_og[num_atoms];
+	for (int i = 0; i < num_atoms; ++i) {
+		atoms_og[i] = atoms[i];
+	}
 	for (int cur_atom = 0; cur_atom < num_atoms; ++cur_atom) {
 		for (int ptr_atom = 0; ptr_atom < num_atoms; ++ptr_atom) {
 			if (cur_atom == ptr_atom) {
@@ -130,7 +132,6 @@ void simulate(Atom *atoms, int num_atoms)
 			atoms[ptr_atom].y += force_vector.y;
 		}
 	}
-	printf("\n");
 }
 
 double get_delta_time(Uint64 *now, Uint64 *last)
@@ -143,7 +144,16 @@ double get_delta_time(Uint64 *now, Uint64 *last)
 void draw(SDL_Renderer *renderer, Atom *atoms, int num_atoms)
 {
 	for (int i = 0; i < num_atoms; ++i) {
-		filledCircleColor(renderer, atoms[i].x, atoms[i].y, ATOM_SIZE, atoms[i].color);
+		filledCircleRGBA(
+				renderer,
+				atoms[i].x,
+				atoms[i].y,
+				atoms[i].mass,
+				atoms[i].r,
+				atoms[i].g,
+				atoms[i].b,
+				atoms[i].a
+		);
 	}
 }
 
@@ -197,7 +207,7 @@ int main(void)
 					}
 					break;
 				case SDL_MOUSEBUTTONDOWN:
-					for (int i = 0; i < 5; ++i) {
+					for (int i = 0; i < (num_atoms > 10 ? 2 : 5); ++i) {
 						atoms = realloc(atoms, ++num_atoms * sizeof(Atom));
 						atoms[num_atoms - 1] = point2Atom(mousepos);
 					}
@@ -212,6 +222,12 @@ int main(void)
 			}
 		}
 
+		int num = 0;
+		for (int i = 0; i < num_atoms; ++i) {
+			num += atoms[i].mass > 1 ? 1 : 0;
+		}
+		printf("num: %d\n", num);
+
 		simulate(atoms, num_atoms);
 
 		draw(renderer, atoms, num_atoms);
@@ -220,6 +236,9 @@ int main(void)
 		SDL_Delay(16);
 	}
 
+	if (atoms) {
+		free(atoms);
+	}
 
 	if (renderer) {
 		SDL_DestroyRenderer(renderer);
