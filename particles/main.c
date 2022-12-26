@@ -44,7 +44,7 @@ Atom point2Atom(SDL_Point point) {
 		.x = point.x,
 		.y = point.y,
 		.mass = 1,
-		.color = ATOM_NORMAL_COLOR
+		.color = 0xFFF94144
 	};
 }
 
@@ -61,16 +61,18 @@ double calculate_length(Vec2 vector) {
 
 void colorize_atom(Atom *atom, double distance) {
 	Uint32 colors[] = {
-		0xFFF94144,
-		0xFFF3722C,
-		0xFFF8961E,
-		0xFFF9C74F,
-		0xFF90BE6D,
-		0xFF43AA8B,
-		0xFF577590
+		0xF94144FF,
+		0xF3722CFF,
+		0xF8961EFF,
+		0xF9C74FFF,
+		0x90BE6DFF,
+		0x43AA8BFF,
+		0x577590FF
 	};
 	int num_colors = 7;
-	atom->color = colors[(int)fmin(distance, num_colors - 1)];
+	int extra = 5;
+	printf("%d", (int)(fmin(distance, (num_colors - 1) * extra) / extra));
+	atom->color = colors[(int)(fmin(distance, (num_colors - 1) * extra) / extra)];
 }
 
 void simulate(Atom *atoms, int num_atoms)
@@ -95,6 +97,8 @@ void simulate(Atom *atoms, int num_atoms)
 			}
 
 			double vector_length = calculate_length(vector);
+
+			colorize_atom(&(atoms[ptr_atom]), vector_length);
 
 			double attract_force =
 				pow(vector_length, ATTRACT_EXP) * ATTRACT_FORCE * -10000 * deltaTime;
@@ -124,10 +128,9 @@ void simulate(Atom *atoms, int num_atoms)
 
 			atoms[ptr_atom].x += force_vector.x;
 			atoms[ptr_atom].y += force_vector.y;
-
-			colorize_atom(&atoms[ptr_atom], vector_length);
 		}
 	}
+	printf("\n");
 }
 
 double get_delta_time(Uint64 *now, Uint64 *last)
@@ -180,8 +183,8 @@ int main(void)
 
 		deltaTime = get_delta_time(&time_now, &time_last);
 
-		printf("\rfps: %.1f", 1 / deltaTime);
-		fflush(stdout);
+		/* printf("\rfps: %.1f", 1 / deltaTime); */
+		/* fflush(stdout); */
 
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
